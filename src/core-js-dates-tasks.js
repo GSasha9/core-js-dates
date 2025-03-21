@@ -67,8 +67,15 @@ function getDayName(date) {
  * Date('2024-02-13T00:00:00Z') => Date('2024-02-16T00:00:00Z')
  * Date('2024-02-16T00:00:00Z') => Date('2024-02-23T00:00:00Z')
  */
-function getNextFriday(/* date */) {
-  throw new Error('Not implemented');
+function getNextFriday(date) {
+  const dateMl = Date.parse(date);
+  const dayToMl = 1000 * 60 * 60 * 24;
+  const day = date.getDay();
+  const friday = 5;
+
+  const daysGap = day < friday ? friday - day : 7 - (day - friday);
+
+  return new Date(dateMl + daysGap * dayToMl);
 }
 
 /**
@@ -154,8 +161,19 @@ function isDateInPeriod(date, period) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const prDate = new Date(date);
+  let str = '';
+  const hours = prDate.getUTCHours();
+  let formattedHours = 0;
+  if (hours >= 12) {
+    str = 'PM';
+    formattedHours = hours % 12 || 12;
+  } else {
+    str = 'AM';
+    formattedHours = hours;
+  }
+  return `${prDate.getUTCMonth() + 1}/${prDate.getUTCDate()}/${prDate.getFullYear()}, ${formattedHours}:${String(prDate.getUTCMinutes()).padStart(2, '0')}:${String(prDate.getUTCSeconds()).padStart(2, '0')} ${str}`;
 }
 
 /**
@@ -170,8 +188,16 @@ function formatDate(/* date */) {
  * 12, 2023 => 10
  * 1, 2024 => 8
  */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let count = 0;
+  const endDate = new Date(year, month, 0).getDate();
+  for (let i = 1; i <= endDate; i += 1) {
+    const prDate = new Date(year, month - 1, i);
+    if (prDate.getDay() === 6 || prDate.getDay() === 0) {
+      count += 1;
+    }
+  }
+  return count;
 }
 
 /**
@@ -265,10 +291,18 @@ function getWorkSchedule(/* period, countWorkDays, countOffDays */) {
  * Date(2022, 2, 1) => false
  * Date(2020, 2, 1) => true
  */
-function isLeapYear(/* date */) {
-  throw new Error('Not implemented');
+function isLeapYear(date) {
+  const year = date.getFullYear();
+  if (year % 4 === 0) {
+    if (year % 100 !== 0) {
+      return true;
+    }
+    if (year % 400 === 0) {
+      return true;
+    }
+  }
+  return false;
 }
-
 module.exports = {
   dateToTimestamp,
   getTime,
